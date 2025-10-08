@@ -6,11 +6,13 @@ import PaymentEntry from './components/paymentEntry.jsx';
 import ShippingEntry from './components/shippingEntry.jsx';
 import ViewOrder from './components/viewOrder.jsx';
 import ViewConfirmation from './components/viewConfirmation.jsx';
+import Navbar from './components/Navbar.jsx';
 
 export default function App() {
   return (
     <div className="App">
       <Router>
+        <Navbar />
         <main className="content">
           <Routes>
             <Route path='/purchase' element={<Purchase />} />
