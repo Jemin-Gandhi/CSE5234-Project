@@ -1,8 +1,7 @@
 import React from "react";
 
-const Purchase = () => {
+export default function Purchase() {
   let title = "Purchase Page";
-
   return (
     <div>
       <h1>{title}</h1>
@@ -10,5 +9,3 @@ const Purchase = () => {
     </div>
   );
 };
-
-export default Purchase;
