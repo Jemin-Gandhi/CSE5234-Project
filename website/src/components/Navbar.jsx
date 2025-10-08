@@ -23,6 +23,9 @@ export default function Navbar() {
               <Link className="nav-link" to="/purchase">Purchase</Link>
             </li>
             <li className="nav-item">
+              <Link className="nav-link" to="/purchase/shippingEntry">Shipping</Link>
+            </li>
+            <li className="nav-item">
               <Link className="nav-link" to="/purchase/paymentEntry">Payment</Link>
             </li>
             <li className="nav-item">
