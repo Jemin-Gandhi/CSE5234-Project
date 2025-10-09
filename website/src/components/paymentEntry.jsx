@@ -6,7 +6,7 @@ export default function PaymentEntry() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Get order data from previous step
+  // Get any existing order data (e.g. items from previous steps)
   const orderData = location.state?.order || {};
 
   const [paymentInfo, setPaymentInfo] = useState({
@@ -25,7 +25,6 @@ export default function PaymentEntry() {
       [name]: value,
     }));
 
-    // Clear the error once user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -67,6 +66,7 @@ export default function PaymentEntry() {
     e.preventDefault();
 
     if (validateForm()) {
+      // Combine existing order info with payment details
       const updatedOrder = {
         ...orderData,
         paymentDetails: paymentInfo,
@@ -75,12 +75,13 @@ export default function PaymentEntry() {
       console.log("Payment details saved:", paymentInfo);
       console.log("Updated order:", updatedOrder);
 
-      navigate("/purchase/viewConfirmation", { state: { order: updatedOrder } });
+      // ✅ Navigate to the Shipping page, passing payment info forward
+      navigate("/purchase/shippingEntry", { state: { order: updatedOrder } });
     }
   };
 
   const handleBack = () => {
-    navigate("/purchase/shippingEntry", { state: { order: orderData } });
+    navigate("/purchase");
   };
 
   return (
@@ -179,11 +180,11 @@ export default function PaymentEntry() {
                     className="btn btn-outline-secondary"
                     onClick={handleBack}
                   >
-                    ← Back to Shipping
+                    ← Back to Purchase
                   </button>
 
                   <button type="submit" className="btn btn-danger">
-                    Review Order →
+                    Continue to Shipping →
                   </button>
                 </div>
               </form>
