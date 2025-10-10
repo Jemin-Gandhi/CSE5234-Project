@@ -41,9 +41,21 @@ const Purchase = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("order:", order);
-
-    navigate("/purchase/paymentEntry", { state: { order } });
+  
+    // Build an items array combining PRODUCTS and selected quantities
+    const selectedItems = PRODUCTS
+      .map((product, index) => ({
+        name: product.name,
+        price: product.price,
+        quantity: Number(order.buyQuantity[index]) || 0,
+      }))
+      .filter(item => item.quantity > 0); // Only include purchased items
+  
+    const fullOrder = { ...order, items: selectedItems };
+  
+    console.log("Full order:", fullOrder);
+  
+    navigate("/purchase/paymentEntry", { state: { order: fullOrder } });
   };
 
   return (

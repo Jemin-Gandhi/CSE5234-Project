@@ -10,16 +10,20 @@ export default function ViewOrder() {
   const orderData = location.state?.order || {};
   const shipping = orderData.shippingDetails || {};
   const payment = orderData.paymentDetails || {};
-  const items = orderData.items || []; // optional — if your order includes items
+  const items = orderData.items || [];
 
-  const handleBack = () => {
-    navigate("/purchase");
-  };
+  // 🧮 Calculate subtotal and total
+  const subtotal = items.reduce(
+    (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+    0
+  );
+  const taxRate = 0.07; // Example 7% sales tax
+  const tax = subtotal * taxRate;
+  const total = subtotal + tax;
 
-  const handleConfirm = () => {
-    // Move to confirmation page with the same order data
+  const handleBack = () => navigate("/purchase");
+  const handleConfirm = () =>
     navigate("/purchase/viewConfirmation", { state: { order: orderData } });
-  };
 
   return (
     <div className="container mt-5 mb-5">
@@ -61,17 +65,35 @@ export default function ViewOrder() {
                 <p><strong>Expiration Date:</strong> {payment.expir_date || "N/A"}</p>
               </div>
 
-              {/* Order Summary (if applicable) */}
+              {/* 🧾 Order Summary */}
               {items.length > 0 && (
                 <>
                   <h4 className="text-danger mb-3">Order Summary</h4>
                   <div className="border rounded p-3 mb-4 bg-light">
                     {items.map((item, index) => (
-                      <div key={index} className="d-flex justify-content-between">
-                        <span>{item.name} (x{item.quantity})</span>
-                        <span>${item.price?.toFixed(2) || "0.00"}</span>
+                      <div key={index} className="d-flex justify-content-between mb-2">
+                        <span>
+                          {item.name} (x{item.quantity})
+                        </span>
+                        <span>
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </span>
                       </div>
                     ))}
+
+                    <hr />
+                    <div className="d-flex justify-content-between">
+                      <strong>Subtotal:</strong>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <strong>Tax (7%):</strong>
+                      <span>${tax.toFixed(2)}</span>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <strong>Total:</strong>
+                      <strong>${total.toFixed(2)}</strong>
+                    </div>
                   </div>
                 </>
               )}
