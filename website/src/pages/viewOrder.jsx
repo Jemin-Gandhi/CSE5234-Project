@@ -71,7 +71,7 @@ export default function ViewOrder() {
                 <>
                   <h4 className="text-danger mb-3">Order Summary</h4>
                   <div className="border rounded p-3 mb-4 bg-light">
-                    {items.map((item, index) => (
+                    {items.filter((item) => item.quantity > 0).map((item, index) => (
                       <div key={index} className="d-flex justify-content-between mb-2">
                         <span>
                           {item.name} (x{item.quantity})

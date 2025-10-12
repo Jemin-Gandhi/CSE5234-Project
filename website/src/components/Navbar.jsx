@@ -22,8 +22,8 @@ export default function Navbar({ rightSlot = null }) {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item"><Link className="nav-link" to="/purchase">Products</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/purchase/shippingEntry">Shipping</Link></li>
               <li className="nav-item"><Link className="nav-link" to="/purchase/paymentEntry">Payment</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/purchase/shippingEntry">Shipping</Link></li>
               <li className="nav-item"><Link className="nav-link" to="/purchase/viewOrder">View Order</Link></li>
             </ul>
 

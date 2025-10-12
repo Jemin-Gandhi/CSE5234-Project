@@ -7,7 +7,7 @@ export function StoreProvider({ children }) {
     const [catalog] = useState(Products)
 
     const [cart, setCart] = useState(
-        Products.map(i => ({'id': i.id, 'price': i.price, 'quantity': 0}))
+        Products.map(i => ({'id': i.id, 'name': i.name, 'price': i.price, 'quantity': 0}))
     );
 
     useEffect(() => {
