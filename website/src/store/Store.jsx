@@ -33,7 +33,6 @@ export function StoreProvider({ children }) {
         return qty;
     }
     const updateQty = (id, qty) => setCart(prev => prev.map(l => l.id === id ? { ...l, quantity: qty } : l))
-    const removeItem = (id) => setCart(prev => prev.filter(l => l.id !== id))
     const clearCart = () => setCart([])
 
     const cartCount = useMemo(() => cart.reduce((s, l) => s + l.quantity, 0), [cart])
@@ -41,7 +40,7 @@ export function StoreProvider({ children }) {
 
     const value = {
         catalog, cart,
-        addToCart, updateQty, getQty, removeItem, clearCart,
+        addToCart, updateQty, getQty, clearCart,
         cartCount, cartTotal,
     }
 

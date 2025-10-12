@@ -8,7 +8,6 @@ const Purchase = () => {
   const navigate = useNavigate();
 
   const { cart, updateQty } = useStore();
-  console.log(cart);
   const changeValue = (index, value) => {
     const id = index + 1;
     const newValue = Math.max(Number(value), 0);

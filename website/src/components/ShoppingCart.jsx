@@ -54,7 +54,7 @@ export default function ShoppingCart({ isOpen, onClose }) {
 
                                         <button
                                             className="btn btn-sm btn-outline-danger"
-                                            onClick={() => removeItem(item.id)}
+                                            onClick={() => updateQty(item.id, 0)}
                                             aria-label={`Remove ${item.name}`}
                                         >
                                             Remove
