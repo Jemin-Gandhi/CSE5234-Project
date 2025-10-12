@@ -1,18 +1,19 @@
 import './App.css';
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Purchase from './components/purchase.jsx';
-import PaymentEntry from './components/paymentEntry.jsx';
-import ShippingEntry from './components/shippingEntry.jsx';
-import ViewOrder from './components/viewOrder.jsx';
-import ViewConfirmation from './components/viewConfirmation.jsx';
-import Navbar from './components/Navbar.jsx';
+import { Route, Routes, Navigate } from "react-router-dom";
+import Purchase from './pages/purchase.jsx';
+import PaymentEntry from './pages/paymentEntry.jsx';
+import ShippingEntry from './pages/shippingEntry.jsx';
+import ViewOrder from './pages/viewOrder.jsx';
+import ViewConfirmation from './pages/viewConfirmation.jsx';
+import Header from './components/Header.jsx';
+import { StoreProvider } from "./store/Store.jsx";
 
 export default function App() {
   return (
     <div className="App">
-      <Router>
-        <Navbar />
+      <StoreProvider>
+        <Header />
         <main className="content">
           <Routes>
             <Route path='/purchase' element={<Purchase />} />
@@ -23,7 +24,7 @@ export default function App() {
             <Route path='/purchase/viewConfirmation' element={<ViewConfirmation />} />
           </Routes>
         </main>
-      </Router>
+      </StoreProvider>
     </div>
   );
 }
