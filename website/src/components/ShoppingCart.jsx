@@ -18,11 +18,10 @@ export default function ShoppingCart({ isOpen, onClose }) {
 
     return (
         <>
-            <div className={`cart-overlay ${isOpen ? "open" : ""}`} onClick={onClose} aria-hidden={!isOpen}/>
+            <div className={`cart-overlay ${isOpen ? "open" : ""}`} onClick={onClose} aria-hidden="true"/>
             <aside
                 className={`cart-drawer ${isOpen ? "open" : ""}`}
                 aria-label="Shopping cart"
-                aria-hidden={!isOpen}
             >
                 <div className="cart-header">
                     <h5 className="m-0">Your cart</h5>
@@ -33,8 +32,8 @@ export default function ShoppingCart({ isOpen, onClose }) {
                     {cart.length === 0 ?
                         (<p className="text-muted">No items selected.</p>) :
                         (<ul className="list-group list-group-flush">
-                            {cart.map((item) => (
-                                item.quantity === 0 ? (<></>) : (
+                            {cart.map((item) => 
+                                item.quantity === 0 ? null : (
                                 <li key={item.id} className="list-group-item d-flex align-items-center justify-content-between">
                                     <div className="me-2">
                                         <div className="fw-semibold">{item.name}</div>
@@ -61,7 +60,7 @@ export default function ShoppingCart({ isOpen, onClose }) {
                                         </button>
                                     </div>
                                 </li>
-                                )))}
+                                ))}
                         </ul>
                     )}
                 </div>

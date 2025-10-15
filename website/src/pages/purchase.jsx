@@ -1,78 +1,124 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PRODUCTS from "../data/products";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useStore } from "../store/Store";
+import VacationCard from "../components/VacationCard";
+import VacationDetailsModal from "../components/VacationDetailsModal";
 
 const Purchase = () => {
   const navigate = useNavigate();
+  const { catalog, cart, updateQty } = useStore();
+  
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  const { cart, updateQty } = useStore();
+  const handleShowDetails = (product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedProduct(null);
+  };
+
   const changeValue = (index, value) => {
     const id = index + 1;
-    const newValue = Math.max(Number(value), 0);
+    const product = catalog[index];
+    const newValue = Math.max(Number(value) || 0, 0);
+    
+    // Check if quantity exceeds available tickets
+    if (newValue > product.availableTickets) {
+      alert(`Only ${product.availableTickets} tickets available for this vacation package.`);
+      return;
+    }
+    
     updateQty(id, newValue);
+  };
+
+  const incrementQty = (index) => {
+    const currentQty = cart[index]?.quantity || 0;
+    changeValue(index, currentQty + 1);
+  };
+
+  const decrementQty = (index) => {
+    const currentQty = cart[index]?.quantity || 0;
+    if (currentQty > 0) {
+      changeValue(index, currentQty - 1);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Check if at least one item has been selected
+    const hasItems = cart.some(item => item.quantity > 0);
+    if (!hasItems) {
+      alert("Please select at least one vacation package to continue.");
+      return;
+    }
+    
     navigate("/purchase/paymentEntry");
   };
 
   return (
-    <div className="container mt-2 mb-5">
-      <h1 className="text-center text-danger mb-4">Purchase</h1>
+    <div className="container mt-4 mb-5">
+      <div className="text-center mb-4">
+        <h1 className="text-danger">Book Your Dream Vacation</h1>
+        <p className="text-muted">Select tickets for your perfect getaway</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="row g-4">
-        {PRODUCTS.map((product, index) => (
-          <div key={product.id} className="col-12 col-md-6 col-lg-4">
-            <div className="card shadow-sm border-danger h-100 d-flex flex-column">
-              <img
-                src={product.img}
-                alt={product.name}
-                className="card-img-top"
-                style={{ objectFit: "cover", height: "180px" }}
+      <form onSubmit={handleSubmit}>
+        <div className="row g-4">
+          {catalog.map((product, index) => {
+            const currentQty = cart[index]?.quantity || 0;
+            
+            return (
+              <VacationCard
+                key={product.id}
+                product={product}
+                index={index}
+                currentQty={currentQty}
+                onShowDetails={handleShowDetails}
+                onIncrement={incrementQty}
+                onDecrement={decrementQty}
+                onQuantityChange={changeValue}
               />
+            );
+          })}
+        </div>
 
-              {/* Card Content */}
-              <div className="card-body d-flex flex-column justify-content-between">
-                {/* Top Row: Name + Price */}
-                <div className="d-flex justify-content-between align-items-start mb-2">
-                  <h5 className="card-title text-danger mb-0">{product.name}</h5>
-                  <p className="fw-bold text-dark mb-0">
-                    ${product.price.toFixed(2)}
-                  </p>
-                </div>
-
-                {/* Bottom Row: Description + Quantity */}
-                <div className="d-flex justify-content-between align-items-end mt-auto">
-                  <p className="card-text text-muted mb-0" style={{ maxWidth: "60%" }}>
-                    {product.description}
-                  </p>
-
-                  <div className="d-flex align-items-center gap-2">
-                    <input
-                      type="number"
-                      min="0"
-                      className="form-control text-center"
-                      style={{ width: "60px" }}
-                      value={cart[index].quantity}
-                      onChange={(e) => changeValue(index, e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+        {/* Total and Submit */}
+        <div className="text-center mt-5">
+          {cart.some(item => item.quantity > 0) && (
+            <div className="mb-3">
+              <h4 className="text-dark">
+                Total: $
+                {cart.reduce((total, item, index) => {
+                  return total + (catalog[index].price * item.quantity);
+                }, 0).toFixed(2)}
+              </h4>
+              <p className="text-muted small">
+                {cart.reduce((total, item) => total + item.quantity, 0)} ticket(s) selected
+              </p>
             </div>
-          </div>
-        ))}
-
-        {/* Submit Button */}
-        <div className="text-center mt-4">
-          <button type="submit" className="btn btn-danger btn-lg px-5">
+          )}
+          <button 
+            type="submit" 
+            className="btn btn-danger btn-lg px-5"
+            disabled={!cart.some(item => item.quantity > 0)}
+          >
             Proceed to Payment
           </button>
         </div>
       </form>
+
+      {/* Details Modal */}
+      <VacationDetailsModal
+        show={showModal}
+        onHide={handleCloseModal}
+        product={selectedProduct}
+      />
     </div>
   );
 };
