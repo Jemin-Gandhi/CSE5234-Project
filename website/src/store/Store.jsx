@@ -4,7 +4,7 @@ import Products from "../data/products";
 const StoreContext = createContext(null);
 
 export function StoreProvider({ children }) {
-    const [catalog] = useState(Products)
+    const [catalog, setCatalog] = useState(Products)
 
     const [cart, setCart] = useState(
         Products.map(i => ({'id': i.id, 'name': i.name, 'price': i.price, 'quantity': 0}))
@@ -33,14 +33,31 @@ export function StoreProvider({ children }) {
         return qty;
     }
     const updateQty = (id, qty) => setCart(prev => prev.map(l => l.id === id ? { ...l, quantity: qty } : l))
-    const clearCart = () => setCart([])
+    const clearCart = () => {
+        setCart(catalog.map(i => ({'id': i.id, 'name': i.name, 'price': i.price, 'quantity': 0})))
+    }
+
+    const updateAvailableTickets = () => {
+        setCatalog(prev => {
+            return prev.map(product => {
+                const cartItem = cart.find(item => item.id === product.id);
+                if (cartItem && cartItem.quantity > 0) {
+                    return {
+                        ...product,
+                        availableTickets: product.availableTickets - cartItem.quantity
+                    };
+                }
+                return product;
+            });
+        });
+    };
 
     const cartCount = useMemo(() => cart.reduce((s, l) => s + l.quantity, 0), [cart])
     const cartTotal = useMemo(() => cart.reduce((s, l) => s + l.quantity * l.price, 0), [cart])
 
     const value = {
         catalog, cart,
-        addToCart, updateQty, getQty, clearCart,
+        addToCart, updateQty, getQty, clearCart, updateAvailableTickets,
         cartCount, cartTotal,
     }
 

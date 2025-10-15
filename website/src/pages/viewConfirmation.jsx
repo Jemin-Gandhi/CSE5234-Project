@@ -1,12 +1,24 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useStore } from "../store/Store";
 
 export default function ViewConfirmation() {
   const navigate = useNavigate();
+  const { updateAvailableTickets, clearCart } = useStore();
+  const hasProcessed = useRef(false);
 
   const items = JSON.parse(sessionStorage.getItem('items'));
   const total = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+
+  // Update available tickets when order is confirmed - only once
+  useEffect(() => {
+    if (!hasProcessed.current) {
+      updateAvailableTickets();
+      clearCart();
+      hasProcessed.current = true;
+    }
+  }, []);
 
   const payment = {
     'credit_card_number': sessionStorage.getItem('credit_card_number') ?? '',
@@ -67,16 +79,18 @@ export default function ViewConfirmation() {
               </div>
 
               {/* Order Summary */}
-              {items.length > 0 && (
+              {items.filter(item => item.quantity > 0).length > 0 && (
                 <>
                   <h4 className="text-success mb-3">Order Summary</h4>
                   <div className="border rounded p-3 mb-4 bg-light">
-                    {items.map((item, index) => (
-                      <div key={index} className="d-flex justify-content-between mb-2">
-                        <span>{item.name} (x{item.quantity})</span>
-                        <span>${(item.price * item.quantity).toFixed(2)}</span>
-                      </div>
-                    ))}
+                    {items
+                      .filter(item => item.quantity > 0)
+                      .map((item, index) => (
+                        <div key={index} className="d-flex justify-content-between mb-2">
+                          <span>{item.name} (x{item.quantity})</span>
+                          <span>${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                      ))}
 
                     <hr />
                     <div className="d-flex justify-content-between">
