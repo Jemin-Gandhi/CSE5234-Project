@@ -103,3 +103,14 @@
   border-top: 1px solid rgba(0,0,0,.075);
   background: #fff;
 }
+
+main {
+  padding-top: 60px;
+}
+
+@media (max-width: 576px) {
+  .footer p,
+  .footer a {
+    font-size: 0.85rem; /* smaller on phones */
+  }
+}

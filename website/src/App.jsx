@@ -8,13 +8,14 @@ import ViewOrder from './pages/viewOrder.jsx';
 import ViewConfirmation from './pages/viewConfirmation.jsx';
 import Header from './components/Header.jsx';
 import { StoreProvider } from "./store/Store.jsx";
+import Footer from './components/Footer.jsx';
 
 export default function App() {
   return (
-    <div className="App">
+    <div className="App d-flex flex-column min-vh-100">
       <StoreProvider>
         <Header />
-        <main className="content">
+        <main className="content flex-grow-1">
           <Routes>
             <Route path='/purchase' element={<Purchase />} />
             <Route path="/" element={<Navigate replace to="/purchase" />} />
@@ -24,6 +25,7 @@ export default function App() {
             <Route path='/purchase/viewConfirmation' element={<ViewConfirmation />} />
           </Routes>
         </main>
+        <Footer />
       </StoreProvider>
     </div>
   );
