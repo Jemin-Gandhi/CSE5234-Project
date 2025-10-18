@@ -10,6 +10,7 @@ import ContactUs from './pages/ContactUs.jsx';
 import Header from './components/Header.jsx';
 import { StoreProvider } from "./store/Store.jsx";
 import Footer from './components/Footer.jsx';
+import AboutUs from './pages/AboutUs.jsx';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
             <Route path='/purchase/viewOrder' element={<ViewOrder />} />
             <Route path='/purchase/viewConfirmation' element={<ViewConfirmation />} />
             <Route path='/contact' element={<ContactUs />} />
+            <Route path='/about' element={<AboutUs />} />
           </Routes>
         </main>
         <Footer />
