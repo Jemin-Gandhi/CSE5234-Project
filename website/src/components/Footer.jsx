@@ -13,6 +13,9 @@ export default function Footer() {
           <Link to="/purchase" className="text-danger text-decoration-none fw-semibold">
             Home
           </Link>
+          <Link to="/contact" className="text-danger text-decoration-none fw-semibold">
+            Contact Us
+          </Link>
           <a
             href="https://github.com/Jemin-Gandhi/CSE5234-Project"
             target="_blank"

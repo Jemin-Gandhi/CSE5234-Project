@@ -6,6 +6,7 @@ import PaymentEntry from './pages/paymentEntry.jsx';
 import ShippingEntry from './pages/shippingEntry.jsx';
 import ViewOrder from './pages/viewOrder.jsx';
 import ViewConfirmation from './pages/viewConfirmation.jsx';
+import ContactUs from './pages/ContactUs.jsx';
 import Header from './components/Header.jsx';
 import { StoreProvider } from "./store/Store.jsx";
 import Footer from './components/Footer.jsx';
@@ -23,6 +24,7 @@ export default function App() {
             <Route path='/purchase/shippingEntry' element={<ShippingEntry />} />
             <Route path='/purchase/viewOrder' element={<ViewOrder />} />
             <Route path='/purchase/viewConfirmation' element={<ViewConfirmation />} />
+            <Route path='/contact' element={<ContactUs />} />
           </Routes>
         </main>
         <Footer />
