@@ -57,18 +57,13 @@ export default function Navbar({ rightSlot = null }) {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link px-2" to="/purchase/paymentEntry">
-                Payment
+              <Link className="nav-link px-2" to="/contact">
+                Contact Us
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link px-2" to="/purchase/shippingEntry">
-                Shipping
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link px-2" to="/purchase/viewOrder">
-                View Order
+              <Link className="nav-link px-2" to="/about">
+                About Us
               </Link>
             </li>
 
