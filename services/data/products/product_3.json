@@ -1,0 +1,31 @@
+{
+  "id": 3,
+  "name": "European City Explorer",
+  "price": 1299.0,
+  "location": "Paris, Rome & Barcelona",
+  "duration": "10 Days / 9 Nights",
+  "departureDate": "April 10, 2026",
+  "images": [
+    "/images/vacation3/paris.jpg",
+    "/images/vacation3/rome.jpg",
+    "/images/vacation3/barcelona.avif"
+  ],
+  "shortDescription": "Multi-city tour through Europe's finest",
+  "description": "Discover three of Europe's most iconic cities in one unforgettable journey.",
+  "includes": [
+    "Boutique hotel accommodations",
+    "High-speed rail passes between cities",
+    "Guided tours of major attractions",
+    "Skip-the-line museum passes",
+    "Daily continental breakfast",
+    "Welcome dinner in each city",
+    "Professional tour guide services"
+  ],
+  "highlights": [
+    "Eiffel Tower night tour",
+    "Vatican Museums private viewing",
+    "Sagrada Familia priority access",
+    "Local food tasting experiences"
+  ],
+  "availableTickets": 12
+}

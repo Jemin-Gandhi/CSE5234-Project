@@ -126,7 +126,7 @@ export default function Home() {
                         <div className="col-12 col-lg-6">
                             <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm">
                                 <img
-                                    src="/website/public/images/vacation5/alaska-cruise-ship.jpg"
+                                    src="/images/vacation5/alaska-cruise-ship.jpg"
                                     alt="Guests enjoying a luxury cruise at sunset"
                                     className="w-100 h-100 object-fit-cover"
                                 />

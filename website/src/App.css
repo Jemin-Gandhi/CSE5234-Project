@@ -125,7 +125,7 @@ main {
   position: relative;
   min-height: 70vh;
   background: linear-gradient(120deg, rgba(9, 18, 28, 0.85), rgba(9, 18, 28, 0.4)),
-  url('../public/images/vacation2/maui-resort.jpg') center/cover no-repeat;
+  url('/images/vacation2/maui-resort.jpg') center/cover no-repeat;
 }
 
 .home-hero-overlay {

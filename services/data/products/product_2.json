@@ -1,0 +1,31 @@
+{
+  "id": 2,
+  "name": "Tropical Paradise Retreat",
+  "price": 899.0,
+  "location": "Maui, Hawaii",
+  "duration": "7 Days / 6 Nights",
+  "departureDate": "March 22, 2026",
+  "images": [
+    "/images/vacation2/maui-beach.jpg",
+    "/images/vacation2/maui-resort.jpg",
+    "/images/vacation2/maui-snorkeling.webp"
+  ],
+  "shortDescription": "Beachfront resort with water activities",
+  "description": "Escape to paradise with our exclusive Maui beach resort package.",
+  "includes": [
+    "Oceanfront luxury suite",
+    "Daily breakfast and dinner",
+    "Snorkeling equipment and lessons",
+    "Sunset dinner cruise",
+    "Traditional Hawaiian luau experience",
+    "Spa treatment package",
+    "Airport transfers"
+  ],
+  "highlights": [
+    "Private beach access",
+    "Infinity pool overlooking ocean",
+    "Championship golf course nearby",
+    "Complimentary surfboard rentals"
+  ],
+  "availableTickets": 8
+}
