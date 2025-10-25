@@ -1,14 +1,33 @@
 import React, {createContext, useContext, useEffect, useMemo, useState} from "react";
-import Products from "../data/products";
+import { getAllProducts } from "../data/products";
 
 const StoreContext = createContext(null);
 
 export function StoreProvider({ children }) {
-    const [catalog, setCatalog] = useState(Products)
+    const [catalog, setCatalog] = useState([])
+    const [loading, setLoading] = useState(true);
 
-    const [cart, setCart] = useState(
-        Products.map(i => ({'id': i.id, 'name': i.name, 'price': i.price, 'quantity': 0}))
-    );
+    const [cart, setCart] = useState([]);
+
+    // Load products from inventory service
+    useEffect(() => {
+        const loadProducts = async () => {
+            try {
+                const products = await getAllProducts();
+                setCatalog(products);
+                // Initialize cart with all products having quantity 0
+                setCart(products.map(i => ({'id': i.id, 'name': i.name, 'price': i.price, 'quantity': 0})));
+            } catch (error) {
+                console.error('Error loading products:', error);
+                setCatalog([]);
+                setCart([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadProducts();
+    }, []);
 
     useEffect(() => {
         sessionStorage.setItem('items', JSON.stringify(cart));
@@ -56,7 +75,7 @@ export function StoreProvider({ children }) {
     const cartTotal = useMemo(() => cart.reduce((s, l) => s + l.quantity * l.price, 0), [cart])
 
     const value = {
-        catalog, cart,
+        catalog, cart, loading,
         addToCart, updateQty, getQty, clearCart, updateAvailableTickets,
         cartCount, cartTotal,
     }

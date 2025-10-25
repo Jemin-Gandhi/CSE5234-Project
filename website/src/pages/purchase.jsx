@@ -7,7 +7,7 @@ import VacationDetailsModal from "../components/VacationDetailsModal";
 
 const Purchase = () => {
   const navigate = useNavigate();
-  const { catalog, cart, updateQty } = useStore();
+  const { catalog, cart, updateQty, loading } = useStore();
   
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -61,6 +61,19 @@ const Purchase = () => {
     navigate("/purchase/paymentEntry");
   };
 
+  if (loading) {
+    return (
+      <div className="container mt-4 mb-5">
+        <div className="text-center py-5">
+          <div className="spinner-border text-danger" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-3 text-muted">Loading vacation packages...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-4 mb-5">
       <div className="text-center mb-4">
@@ -70,22 +83,28 @@ const Purchase = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="row g-4">
-          {catalog.map((product, index) => {
-            const currentQty = cart[index]?.quantity || 0;
-            
-            return (
-              <VacationCard
-                key={product.id}
-                product={product}
-                index={index}
-                currentQty={currentQty}
-                onShowDetails={handleShowDetails}
-                onIncrement={incrementQty}
-                onDecrement={decrementQty}
-                onQuantityChange={changeValue}
-              />
-            );
-          })}
+          {catalog.length === 0 ? (
+            <div className="col-12 text-center py-5">
+              <p className="text-muted">No vacation packages available at the moment.</p>
+            </div>
+          ) : (
+            catalog.map((product, index) => {
+              const currentQty = cart[index]?.quantity || 0;
+              
+              return (
+                <VacationCard
+                  key={product.id}
+                  product={product}
+                  index={index}
+                  currentQty={currentQty}
+                  onShowDetails={handleShowDetails}
+                  onIncrement={incrementQty}
+                  onDecrement={decrementQty}
+                  onQuantityChange={changeValue}
+                />
+              );
+            })
+          )}
         </div>
 
         {/* Total and Submit */}
