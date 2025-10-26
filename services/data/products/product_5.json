@@ -1,0 +1,31 @@
+{
+  "id": 5,
+  "name": "Alaskan Cruise & Glacier Tour",
+  "price": 1599.0,
+  "location": "Alaska Inside Passage",
+  "duration": "9 Days / 8 Nights",
+  "departureDate": "July 18, 2026",
+  "images": [
+    "/images/vacation5/alaska-cruise-ship.jpg",
+    "/images/vacation5/glacier-excursion.avif",
+    "/images/vacation5/alaska-dog-sledding.png"
+  ],
+  "shortDescription": "Cruise through stunning glacial landscapes",
+  "description": "Sail through Alaska's pristine waters and witness breathtaking glaciers up close.",
+  "includes": [
+    "Balcony stateroom on luxury cruise ship",
+    "All meals and entertainment onboard",
+    "Shore excursions at each port",
+    "Glacier Bay National Park tour",
+    "Whale watching expedition",
+    "Dog sledding adventure",
+    "Specialty dining package"
+  ],
+  "highlights": [
+    "Glacier calving experiences",
+    "Wildlife spotting opportunities",
+    "Northern lights viewing (seasonal)",
+    "Gold Rush heritage tours"
+  ],
+  "availableTickets": 20
+}

@@ -1,8 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import PRODUCTS from "../data/products";
+import { getAllProducts } from "../data/products";
 
 export default function Home() {
+    const [featuredTrips, setFeaturedTrips] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadProducts = async () => {
+            try {
+                const products = await getAllProducts();
+                setFeaturedTrips(products.slice(0, 3));
+            } catch (error) {
+                console.error('Error loading featured trips:', error);
+                setFeaturedTrips([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadProducts();
+    }, []);
+
     const highlights = [
         {
             title: "Verified Getaways",
@@ -17,8 +36,6 @@ export default function Home() {
             description: "Reserve in minutes with secure payment, saved traveler details, and instant confirmation emails.",
         },
     ];
-
-    const featuredTrips = PRODUCTS.slice(0, 3);
 
     return (
         <div className="home-page text-start">
@@ -88,26 +105,39 @@ export default function Home() {
                         </Link>
                     </div>
                     <div className="row g-4">
-                        {featuredTrips.map((trip) => (
-                            <div className="col-12 col-md-6 col-lg-4" key={trip.id}>
-                                <div className="card h-100 shadow-sm border-0 overflow-hidden">
-                                    <img
-                                        src={trip.images[0]}
-                                        alt={trip.name}
-                                        className="home-featured-img"
-                                    />
-                                    <div className="card-body">
-                                        <span className="badge bg-danger-subtle text-danger mb-2">{trip.location}</span>
-                                        <h3 className="h5 fw-semibold">{trip.name}</h3>
-                                        <p className="text-muted mb-2">{trip.duration}</p>
-                                        <p className="fw-bold text-danger mb-3">${trip.price.toLocaleString(undefined, { minimumFractionDigits: 2 })} per traveler</p>
-                                        <Link to="/purchase" className="btn btn-outline-danger w-100">
-                                            Reserve Now
-                                        </Link>
+                        {loading ? (
+                            <div className="col-12 text-center py-5">
+                                <div className="spinner-border text-danger" role="status">
+                                    <span className="visually-hidden">Loading...</span>
+                                </div>
+                                <p className="mt-3 text-muted">Loading featured trips...</p>
+                            </div>
+                        ) : featuredTrips.length === 0 ? (
+                            <div className="col-12 text-center py-5">
+                                <p className="text-muted">No featured trips available at the moment.</p>
+                            </div>
+                        ) : (
+                            featuredTrips.map((trip) => (
+                                <div className="col-12 col-md-6 col-lg-4" key={trip.id}>
+                                    <div className="card h-100 shadow-sm border-0 overflow-hidden">
+                                        <img
+                                            src={trip.images[0]}
+                                            alt={trip.name}
+                                            className="home-featured-img"
+                                        />
+                                        <div className="card-body">
+                                            <span className="badge bg-danger-subtle text-danger mb-2">{trip.location}</span>
+                                            <h3 className="h5 fw-semibold">{trip.name}</h3>
+                                            <p className="text-muted mb-2">{trip.duration}</p>
+                                            <p className="fw-bold text-danger mb-3">${trip.price.toLocaleString(undefined, { minimumFractionDigits: 2 })} per traveler</p>
+                                            <Link to="/purchase" className="btn btn-outline-danger w-100">
+                                                Reserve Now
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
             </section>
@@ -126,7 +156,7 @@ export default function Home() {
                         <div className="col-12 col-lg-6">
                             <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm">
                                 <img
-                                    src="/website/public/images/vacation5/alaska-cruise-ship.jpg"
+                                    src="/images/vacation5/alaska-cruise-ship.jpg"
                                     alt="Guests enjoying a luxury cruise at sunset"
                                     className="w-100 h-100 object-fit-cover"
                                 />

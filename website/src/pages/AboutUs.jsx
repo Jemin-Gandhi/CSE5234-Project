@@ -1,13 +1,12 @@
 import React from "react";
 
-// Import images
-import jeminImg from "../../public/images/jemin.jpg";
-import krishnaImg from "../../public/images/krishna.jpg";
-import benImg from "../../public/images/ben.jpg";
-import gaigeImg from "../../public/images/gaige.jpg";
-import v1 from "../../public/images/vacation1.jpg";
-import v2 from "../../public/images/vacation2.jpg";
-import v3 from "../../public/images/vacation3.jpg";
+import jeminImg from "/images/jemin.jpg";
+import krishnaImg from "/images/krishna.jpg";
+import benImg from "/images/ben.jpg";
+import gaigeImg from "/images/gaige.jpg";
+import v1 from "/images/vacation1.jpg";
+import v2 from "/images/vacation2.jpg";
+import v3 from "/images/vacation3.jpg";
 
 export default function AboutUs() {
   const sections = [

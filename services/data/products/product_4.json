@@ -1,0 +1,31 @@
+{
+  "id": 4,
+  "name": "African Safari Experience",
+  "price": 2199.0,
+  "location": "Serengeti, Tanzania",
+  "duration": "8 Days / 7 Nights",
+  "departureDate": "June 5, 2026",
+  "images": [
+    "/images/vacation4/serengeti-national-park.jpg",
+    "/images/vacation4/safari-lodge.jpg",
+    "/images/vacation4/safari-hot-air-balloon.webp"
+  ],
+  "shortDescription": "Once-in-a-lifetime wildlife safari",
+  "description": "Witness the Big Five and experience the majesty of the African wilderness.",
+  "includes": [
+    "Luxury safari lodge accommodation",
+    "All meals and beverages",
+    "Daily game drives with expert guides",
+    "Visit to Maasai village",
+    "Hot air balloon safari",
+    "Professional wildlife photography session",
+    "International and domestic flights"
+  ],
+  "highlights": [
+    "Witness the Great Migration",
+    "Big Five wildlife viewing",
+    "Sunset safari drives",
+    "Star gazing experiences"
+  ],
+  "availableTickets": 6
+}

@@ -1,0 +1,31 @@
+{
+  "id": 1,
+  "name": "Colorado Ski Adventure",
+  "price": 649.0,
+  "location": "Breckenridge, CO",
+  "duration": "5 Days / 4 Nights",
+  "departureDate": "January 15, 2026",
+  "images": [
+    "/images/vacation1/breckenridge.jpeg",
+    "/images/vacation1/cabin.jpeg",
+    "/images/vacation1/hottub.jpg"
+  ],
+  "shortDescription": "Luxury ski resort getaway with mountain views",
+  "description": "Experience the ultimate winter getaway at our premier Breckenridge ski resort.",
+  "includes": [
+    "Luxury cabin accommodation with hot tub",
+    "All-day lift tickets for 4 days",
+    "Premium ski/snowboard equipment rental",
+    "Daily gourmet breakfast buffet",
+    "Guided ski tours with certified instructors",
+    "Access to resort spa and fitness center",
+    "Evening après-ski activities"
+  ],
+  "highlights": [
+    "Ski-in/ski-out access",
+    "Private hot tub with mountain views",
+    "Within walking distance to Main Street",
+    "Perfect for all skill levels"
+  ],
+  "availableTickets": 15
+}
