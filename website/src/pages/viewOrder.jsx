@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store/Store";
+import orderService from "../services/orderService";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function ViewOrder() {
   const navigate = useNavigate();
   const { cart, cartTotal } = useStore();
+  const [submitting, setSubmitting] = useState(false);
 
   const items = cart;
   const total = cartTotal;
@@ -25,6 +27,59 @@ export default function ViewOrder() {
     'state': sessionStorage.getItem('state') ?? '',
     'zip': sessionStorage.getItem('zip') ?? ''
   }
+
+  const handleConfirmOrder = async () => {
+    setSubmitting(true);
+    
+    try {
+      // Prepare order data for Lambda
+      const orderData = {
+        items: cart
+          .filter(item => item.quantity > 0)
+          .map(item => ({
+            id: item.id,
+            quantity: item.quantity
+          })),
+        payment: payment,
+        shipping: shipping
+      };
+
+      // Call order processing Lambda
+      const result = await orderService.submitOrder(orderData);
+      
+      // Store confirmation number
+      sessionStorage.setItem('confirmation_number', result.confirmation_number);
+      sessionStorage.setItem('order_items', JSON.stringify(result.items));
+      
+      // Navigate to confirmation
+      navigate("/purchase/viewConfirmation");
+      
+    } catch (error) {
+      console.error('Order submission error:', error);
+      
+      try {
+        const errorObj = JSON.parse(error.message);
+        
+        if (errorObj.type === 'INSUFFICIENT_INVENTORY') {
+          // Show detailed error about which items are insufficient
+          const itemsList = errorObj.items
+            .map(item => `${item.name}: requested ${item.requested}, available ${item.available}`)
+            .join('\n');
+          alert(`Unable to complete order. Insufficient inventory:\n\n${itemsList}`);
+        } else if (errorObj.type === 'VALIDATION_ERROR') {
+          alert(`Order validation failed: ${errorObj.message}`);
+        } else {
+          alert(`Order failed: ${errorObj.message}`);
+        }
+      } catch (parseError) {
+        // Fallback for non-JSON errors
+        alert(`Order failed: ${error.message}`);
+      }
+      
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="container mt-5 mb-5">
@@ -97,6 +152,7 @@ export default function ViewOrder() {
                   type="button"
                   className="btn btn-outline-secondary"
                   onClick={() => navigate("/purchase")}
+                  disabled={submitting}
                 >
                   ← Back to Purchase
                 </button>
@@ -104,9 +160,17 @@ export default function ViewOrder() {
                 <button
                   type="button"
                   className="btn btn-danger"
-                  onClick={() => navigate("/purchase/viewConfirmation")}
+                  onClick={handleConfirmOrder}
+                  disabled={submitting}
                 >
-                  Confirm Order →
+                  {submitting ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    'Confirm Order →'
+                  )}
                 </button>
               </div>
             </div>

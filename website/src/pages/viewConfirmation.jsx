@@ -5,20 +5,25 @@ import { useStore } from "../store/Store";
 
 export default function ViewConfirmation() {
   const navigate = useNavigate();
-  const { updateAvailableTickets, clearCart } = useStore();
+  const { clearCart } = useStore();
   const hasProcessed = useRef(false);
 
-  const items = JSON.parse(sessionStorage.getItem('items'));
-  const total = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+  // Get confirmation data from Lambda response
+  const confirmationNumber = sessionStorage.getItem('confirmation_number') || 'N/A';
+  const orderItemsFromLambda = JSON.parse(sessionStorage.getItem('order_items') || '[]');
+  
+  // Calculate total from Lambda response items
+  const total = orderItemsFromLambda.reduce((sum, item) => 
+    sum + (item.price * item.quantity), 0
+  );
 
-  // Update available tickets when order is confirmed - only once
+  // Clear cart after confirmation - only once
   useEffect(() => {
     if (!hasProcessed.current) {
-      updateAvailableTickets();
       clearCart();
       hasProcessed.current = true;
     }
-  }, []);
+  }, [clearCart]);
 
   const payment = {
     'credit_card_number': sessionStorage.getItem('credit_card_number') ?? '',
@@ -46,9 +51,15 @@ export default function ViewConfirmation() {
             </div>
 
             <div className="card-body">
-              <p className="text-center text-muted mb-4">
-                Thank you for your purchase! Below are your order details.
-              </p>
+              <div className="alert alert-success text-center" role="alert">
+                <h4 className="alert-heading">Thank you for your purchase!</h4>
+                <p className="mb-0">
+                  Your confirmation number is: <strong className="fs-4">{confirmationNumber}</strong>
+                </p>
+                <p className="text-muted small mt-2">
+                  Please save this number for your records.
+                </p>
+              </div>
 
               {/* Shipping Information */}
               <h4 className="text-success mb-3">Shipping Information</h4>
@@ -79,11 +90,11 @@ export default function ViewConfirmation() {
               </div>
 
               {/* Order Summary */}
-              {items.filter(item => item.quantity > 0).length > 0 && (
+              {orderItemsFromLambda.filter(item => item.quantity > 0).length > 0 && (
                 <>
                   <h4 className="text-success mb-3">Order Summary</h4>
                   <div className="border rounded p-3 mb-4 bg-light">
-                    {items
+                    {orderItemsFromLambda
                       .filter(item => item.quantity > 0)
                       .map((item, index) => (
                         <div key={index} className="d-flex justify-content-between mb-2">

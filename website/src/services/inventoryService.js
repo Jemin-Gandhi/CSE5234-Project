@@ -1,17 +1,29 @@
-const INVENTORY_API_BASE = 'http://localhost:5002/inventory-management';
+// AWS API Gateway configuration - Hardcoded
+const API_BASE_URL = 'https://bbxc8iwzfk.execute-api.us-east-2.amazonaws.com';
+const INVENTORY_PATH = '/inventory-management/inventory';
+const INVENTORY_API_BASE = `${API_BASE_URL}${INVENTORY_PATH}`;
 
 class InventoryService {
   /**
-   * Fetch all inventory items
+   * Fetch all inventory items from AWS API Gateway
    * @returns {Promise<Array>} Array of inventory items
    */
   async getAllItems() {
     try {
-      const response = await fetch(`${INVENTORY_API_BASE}/inventory`);
+      const response = await fetch(INVENTORY_API_BASE);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+      
+      const data = await response.json();
+      
+      // Convert object with numeric keys to array if needed
+      if (!Array.isArray(data) && typeof data === 'object' && data !== null) {
+        return Object.values(data);
+      }
+      
+      return data;
     } catch (error) {
       console.error('Error fetching all items:', error);
       throw error;
@@ -25,7 +37,7 @@ class InventoryService {
    */
   async getItemById(itemId) {
     try {
-      const response = await fetch(`${INVENTORY_API_BASE}/inventory/items/${itemId}`);
+      const response = await fetch(`${INVENTORY_API_BASE}/items/${itemId}`);
       if (!response.ok) {
         if (response.status === 404) {
           throw new Error('Item not found');
@@ -46,7 +58,7 @@ class InventoryService {
    */
   async getItemsByName(name) {
     try {
-      const response = await fetch(`${INVENTORY_API_BASE}/inventory/items?name=${encodeURIComponent(name)}`);
+      const response = await fetch(`${INVENTORY_API_BASE}/items?name=${encodeURIComponent(name)}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -64,7 +76,7 @@ class InventoryService {
    */
   async reserveItems(items) {
     try {
-      const response = await fetch(`${INVENTORY_API_BASE}/inventory/items`, {
+      const response = await fetch(`${INVENTORY_API_BASE}/items`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,12 +97,12 @@ class InventoryService {
   }
 
   /**
-   * Check service health
+   * Check AWS API Gateway health
    * @returns {Promise<Object>} Health status
    */
   async checkHealth() {
     try {
-      const response = await fetch(`${INVENTORY_API_BASE.replace('/inventory-management', '')}/health`);
+      const response = await fetch(`${API_BASE_URL}/health`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
