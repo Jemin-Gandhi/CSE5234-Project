@@ -9,7 +9,12 @@ export default function PaymentEntry() {
     credit_card_number: sessionStorage.getItem('credit_card_number') ?? '',
     expir_date: sessionStorage.getItem('expir_date') ?? '',
     cvvCode: sessionStorage.getItem('cvvCode') ?? '',
-    card_holder_name: sessionStorage.getItem('card_holder_name') ?? ''
+    card_holder_name: sessionStorage.getItem('card_holder_name') ?? '',
+    billing_address_line1: sessionStorage.getItem('billing_address_line1') ?? '',
+    billing_address_line2: sessionStorage.getItem('billing_address_line2') ?? '',
+    billing_city: sessionStorage.getItem('billing_city') ?? '',
+    billing_state: sessionStorage.getItem('billing_state') ?? '',
+    billing_zip: sessionStorage.getItem('billing_zip') ?? ''
   });
 
   const [errors, setErrors] = useState({});
@@ -46,6 +51,24 @@ export default function PaymentEntry() {
 
     if (!paymentInfo.card_holder_name.trim()) {
       newErrors.card_holder_name = "Cardholder name is required";
+    }
+
+    if (!paymentInfo.billing_address_line1.trim()) {
+      newErrors.billing_address_line1 = "Billing address is required";
+    }
+
+    if (!paymentInfo.billing_city.trim()) {
+      newErrors.billing_city = "City is required";
+    }
+
+    if (!paymentInfo.billing_state.trim()) {
+      newErrors.billing_state = "State is required";
+    }
+
+    if (!paymentInfo.billing_zip.trim()) {
+      newErrors.billing_zip = "ZIP code is required";
+    } else if (!/^\d{5}(-\d{4})?$/.test(paymentInfo.billing_zip)) {
+      newErrors.billing_zip = "Please enter a valid ZIP code (12345 or 12345-6789)";
     }
 
     setErrors(newErrors);
@@ -138,6 +161,95 @@ export default function PaymentEntry() {
                       maxLength="4"
                     />
                     {errors.cvvCode && (<div className="invalid-feedback">{errors.cvvCode}</div>)}
+                  </div>
+                </div>
+
+                {/* Billing Address Section */}
+                <hr className="my-4" />
+                <h5 className="mb-3">Billing Address</h5>
+
+                {/* Billing Address Line 1 */}
+                <div className="mb-3">
+                  <label htmlFor="billing_address_line1" className="form-label">
+                    Address Line 1 <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.billing_address_line1 ? "is-invalid" : ""}`}
+                    id="billing_address_line1"
+                    name="billing_address_line1"
+                    value={paymentInfo.billing_address_line1}
+                    onChange={handleChange}
+                    placeholder="123 Main St"
+                  />
+                  {errors.billing_address_line1 && (<div className="invalid-feedback">{errors.billing_address_line1}</div>)}
+                </div>
+
+                {/* Billing Address Line 2 */}
+                <div className="mb-3">
+                  <label htmlFor="billing_address_line2" className="form-label">
+                    Address Line 2
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="billing_address_line2"
+                    name="billing_address_line2"
+                    value={paymentInfo.billing_address_line2}
+                    onChange={handleChange}
+                    placeholder="Apt, Suite, etc."
+                  />
+                </div>
+
+                {/* Billing City, State, ZIP */}
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="billing_city" className="form-label">
+                      City <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={`form-control ${errors.billing_city ? "is-invalid" : ""}`}
+                      id="billing_city"
+                      name="billing_city"
+                      value={paymentInfo.billing_city}
+                      onChange={handleChange}
+                      placeholder="City"
+                    />
+                    {errors.billing_city && (<div className="invalid-feedback">{errors.billing_city}</div>)}
+                  </div>
+
+                  <div className="col-md-3 mb-3">
+                    <label htmlFor="billing_state" className="form-label">
+                      State <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={`form-control ${errors.billing_state ? "is-invalid" : ""}`}
+                      id="billing_state"
+                      name="billing_state"
+                      value={paymentInfo.billing_state}
+                      onChange={handleChange}
+                      placeholder="NY"
+                      maxLength="2"
+                    />
+                    {errors.billing_state && (<div className="invalid-feedback">{errors.billing_state}</div>)}
+                  </div>
+
+                  <div className="col-md-3 mb-3">
+                    <label htmlFor="billing_zip" className="form-label">
+                      ZIP <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={`form-control ${errors.billing_zip ? "is-invalid" : ""}`}
+                      id="billing_zip"
+                      name="billing_zip"
+                      value={paymentInfo.billing_zip}
+                      onChange={handleChange}
+                      placeholder="12345"
+                    />
+                    {errors.billing_zip && (<div className="invalid-feedback">{errors.billing_zip}</div>)}
                   </div>
                 </div>
 

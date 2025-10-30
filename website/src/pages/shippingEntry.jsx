@@ -14,12 +14,60 @@ export default function ShippingEntry() {
     zip: sessionStorage.getItem('zip') ?? '',
   });
 
+  const [sameAsBilling, setSameAsBilling] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const handleSameAsBilling = (e) => {
+    const checked = e.target.checked;
+    setSameAsBilling(checked);
+
+    if (checked) {
+      // Copy billing address from sessionStorage
+      const billingData = {
+        name: sessionStorage.getItem('card_holder_name') ?? '',
+        addressLine1: sessionStorage.getItem('billing_address_line1') ?? '',
+        addressLine2: sessionStorage.getItem('billing_address_line2') ?? '',
+        city: sessionStorage.getItem('billing_city') ?? '',
+        state: sessionStorage.getItem('billing_state') ?? '',
+        zip: sessionStorage.getItem('billing_zip') ?? ''
+      };
+
+      // Update state and sessionStorage with shipping keys
+      setShippingDetails(billingData);
+      // Save to sessionStorage with shipping key names (without billing_ prefix)
+      sessionStorage.setItem('name', billingData.name);
+      sessionStorage.setItem('addressLine1', billingData.addressLine1);
+      sessionStorage.setItem('addressLine2', billingData.addressLine2);
+      sessionStorage.setItem('city', billingData.city);
+      sessionStorage.setItem('state', billingData.state);
+      sessionStorage.setItem('zip', billingData.zip);
+    } else {
+      // Clear fields when unchecked
+      const emptyData = {
+        name: '',
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        zip: ''
+      };
+
+      setShippingDetails(emptyData);
+      Object.entries(emptyData).forEach(([key, value]) => {
+        sessionStorage.setItem(key, value);
+      });
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setShippingDetails((prev) => ({...prev, [name]: value}));
     sessionStorage.setItem(name, value);
+
+    // Uncheck "same as billing" if user manually edits any field
+    if (sameAsBilling) {
+      setSameAsBilling(false);
+    }
 
     if (errors[name])
       setErrors((prev) => ({...prev, [name]: "",}));
@@ -68,6 +116,25 @@ export default function ShippingEntry() {
 
             <div className="card-body">
               <form onSubmit={handleSubmit}>
+                {/* Same as Billing Checkbox */}
+                <div className="mb-4">
+                  <div className="form-check d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      className="form-check-input me-2"
+                      id="sameAsBilling"
+                      checked={sameAsBilling}
+                      onChange={handleSameAsBilling}
+                    />
+                    <label 
+                      className="form-check-label mb-0" 
+                      htmlFor="sameAsBilling"
+                    >
+                      <strong>Same as billing address</strong>
+                    </label>
+                  </div>
+                </div>
+
                 {/* Name */}
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label">
