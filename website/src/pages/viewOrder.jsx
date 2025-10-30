@@ -16,7 +16,12 @@ export default function ViewOrder() {
     'credit_card_number': sessionStorage.getItem('credit_card_number') ?? '',
     'expir_date': sessionStorage.getItem('expir_date') ?? '',
     'cvvCode': sessionStorage.getItem('cvvCode') ?? '',
-    'card_holder_name': sessionStorage.getItem('card_holder_name') ?? ''
+    'card_holder_name': sessionStorage.getItem('card_holder_name') ?? '',
+    'billing_address_line1': sessionStorage.getItem('billing_address_line1') ?? '',
+    'billing_address_line2': sessionStorage.getItem('billing_address_line2') ?? '',
+    'billing_city': sessionStorage.getItem('billing_city') ?? '',
+    'billing_state': sessionStorage.getItem('billing_state') ?? '',
+    'billing_zip': sessionStorage.getItem('billing_zip') ?? ''
   }
 
   const shipping = {
@@ -118,7 +123,20 @@ export default function ViewOrder() {
                     ? "**** **** **** " + payment.credit_card_number.slice(-4)
                     : "N/A"}
                 </p>
-                <p><strong>Expiration Date:</strong> {payment.expir_date || "N/A"}</p>
+                <p className="mb-0"><strong>Expiration Date:</strong> {payment.expir_date || "N/A"}</p>
+              </div>
+
+              {/* Billing Address */}
+              <h4 className="text-danger mb-3">Billing Address</h4>
+              <div className="border rounded p-3 mb-4 bg-light">
+                <p><strong>Name:</strong> {payment.card_holder_name || "N/A"}</p>
+                <p><strong>Address Line 1:</strong> {payment.billing_address_line1 || "N/A"}</p>
+                {payment.billing_address_line2 && <p><strong>Address Line 2:</strong> {payment.billing_address_line2}</p>}
+                <p className="mb-0">
+                  <strong>City:</strong> {payment.billing_city || "N/A"}{" "}
+                  <strong>State:</strong> {payment.billing_state || "N/A"}{" "}
+                  <strong>ZIP:</strong> {payment.billing_zip || "N/A"}
+                </p>
               </div>
 
               {/* Order Summary */}

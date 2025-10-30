@@ -4,6 +4,15 @@ import { Link } from "react-router-dom";
 export default function Navbar({ rightSlot = null }) {
   const navbarRef = useRef(null);
 
+  // Close the navbar collapse
+  const closeNavbar = () => {
+    const navbarCollapse = navbarRef.current?.querySelector(".navbar-collapse.show");
+    const toggler = navbarRef.current?.querySelector(".navbar-toggler");
+    if (navbarCollapse && toggler) {
+      toggler.click();
+    }
+  };
+
   // ✅ Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -52,17 +61,22 @@ export default function Navbar({ rightSlot = null }) {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
             <li className="nav-item">
-              <Link className="nav-link px-2" to="/purchase">
-                Products
+              <Link className="nav-link px-2" to="/" onClick={closeNavbar}>
+                Home
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link px-2" to="/contact">
+              <Link className="nav-link px-2" to="/purchase" onClick={closeNavbar}>
+                Vacations
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link px-2" to="/contact" onClick={closeNavbar}>
                 Contact Us
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link px-2" to="/about">
+              <Link className="nav-link px-2" to="/about" onClick={closeNavbar}>
                 About Us
               </Link>
             </li>
