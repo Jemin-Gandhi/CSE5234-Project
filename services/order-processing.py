@@ -6,21 +6,12 @@ from uuid import uuid4
 
 import requests
 
-ROOT_URL = "https://www.domain.com/"
+ROOT_URL = "https://bbxc8iwzfk.execute-api.us-east-2.amazonaws.com/"
 HEADERS = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST",
 }
-
-
-def _normalize_path(event: Dict) -> List[str]:
-    path = event.get("requestContext", {}).get("http", {}).get("path")
-    stage = event.get("requestContext", {}).get("stage")
-    if stage and stage != "$default" and path.startswith(f"/{stage}/"):
-        path = path[len(stage) + 2 :]
-    path = path.lstrip("/")
-    return [segment for segment in path.split("/") if segment]
 
 
 def _response(status: int, body: Dict | List | None = None) -> Dict:
@@ -94,20 +85,19 @@ def _validate_section(section: object, name: str) -> Dict:
 def lambda_handler(event: Dict, context):
     method = event["requestContext"]["http"]["method"]
 
-    segments = _normalize_path(event)
-    if not (method == "POST" and segments == ["orders"]):
+    if not (method == "POST"):
         return _response(404, {"error": "Not found"})
 
+    body = event.get("body") or "{}"
+    if isinstance(body, str):
+        try:
+            body = json.loads(body)
+        except json.JSONDecodeError as exc:
+            return _response(400, {"Invalid JSON format": f"{str(exc)} {body}"})
     try:
-        body = event.get("body") or "{}"
-        payload = json.loads(body)
-    except json.JSONDecodeError:
-        return _response(400, {"error": "Invalid JSON payload"})
-
-    try:
-        items = _validate_items(payload.get("items"))
-        _validate_section(payload.get("payment"), "payment")
-        _validate_section(payload.get("shipping"), "shipping")
+        items = _validate_items(body.get("items"))
+        _validate_section(body.get("payment"), "payment")
+        _validate_section(body.get("shipping"), "shipping")
     except ValueError as exc:
         return _response(400, {"error": str(exc)})
 
@@ -118,9 +108,9 @@ def lambda_handler(event: Dict, context):
         try:
             inventory_item = _fetch_item(item["id"])
         except ValueError as exc:
-            return _response(404, {"error": str(exc)})
+            return _response(404, {"error": repr(exc)})
         except RuntimeError as exc:
-            return _response(502, {"error": str(exc)})
+            return _response(502, {"Fetch error": repr(exc)})
 
         available = int(inventory_item.get("availableTickets", 0))
         if item["quantity"] > available:
@@ -146,7 +136,7 @@ def lambda_handler(event: Dict, context):
     try:
         reservation_result = _reserve_items(items)
     except RuntimeError as exc:
-        return _response(502, {"error": str(exc)})
+        return _response(502, {"Reservation error": repr(exc)})
 
     if reservation_result["status"] == 409:
         return _response(409, reservation_result["body"])
@@ -158,4 +148,3 @@ def lambda_handler(event: Dict, context):
             "items": summaries,
         },
     )
-
