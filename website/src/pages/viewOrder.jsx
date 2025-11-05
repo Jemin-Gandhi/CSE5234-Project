@@ -43,7 +43,9 @@ export default function ViewOrder() {
           .filter(item => item.quantity > 0)
           .map(item => ({
             id: item.id,
-            quantity: item.quantity
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price
           })),
         payment: payment,
         shipping: shipping
