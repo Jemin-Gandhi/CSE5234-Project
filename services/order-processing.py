@@ -2,12 +2,10 @@ from __future__ import annotations
 
 import json
 import os
-from errno import errorcode
 from uuid import uuid4
 
 import requests
-import mysql.connector
-from mysql.connector import errorcode
+import boto3
 
 ROOT_URL = os.environ.get('ROOT_URL')
 HEADERS = {
@@ -15,6 +13,7 @@ HEADERS = {
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST",
 }
+BUSINESS_ID = 1234567
 
 
 def _response(status: int, body: dict | list | None = None) -> dict:
@@ -67,7 +66,8 @@ def _fetch_item(item_id: int) -> dict:
 def _reserve_items(items: list[dict]) -> dict:
     url = f'{ROOT_URL.rstrip("/")}/inventory-management/inventory/items'
     try:
-        response = requests.post(url, json={"items": items}, timeout=10)
+        print(f"Sending inventory service post request")
+        response = requests.post(url, json={"items": items}, timeout=5)
     except requests.exceptions.Timeout as e:
         raise RuntimeError(f"{e}\nInventory service timed out: {url}") from e
 
@@ -90,107 +90,47 @@ def _validate_items(items: object) -> list[dict]:
             raise ValueError(f"Invalid item format. Items must be a dictionary with id and quantity")
         try:
             item_id = int(item.get("id"))
+            name = item.get("name", "Unknown")
             quantity = int(item.get("quantity"))
+            price = float(item.get("price", 0.0))
         except (TypeError, ValueError):
             raise ValueError(f"Invalid order format. Key {item.get('id')} and quantity {item.get('quantity')} must be integers")
         if quantity <= 0:
             raise ValueError("Quantity to reserve must be greater than 0")
-        validated_items.append({"id": item_id, "quantity": quantity})
+        validated_items.append({"id": item_id, "name": name, "quantity": quantity, "price": price})
     return validated_items
-
-
-def _validate_item_quantities(items: list[dict]) -> tuple[list[dict], list[dict]]:
-    summaries: list[dict] = []
-    insufficient: list[dict] = []
-
-    for item in items:
-        try:
-            inventory_item = _fetch_item(item["id"])
-        except ValueError as exc:
-            raise ValueError(f"Invalid order format. Item {item['id']} not found") from exc
-        except RuntimeError as exc:
-            raise RuntimeError(f"Inventory service error: {exc}") from exc
-
-        available = int(inventory_item.get("availableTickets", 0))
-        if item["quantity"] > available:
-            insufficient.append({
-                "id": item["id"],
-                "name": inventory_item.get("name", "Unknown"),
-                "requested": item["quantity"],
-                "available": available
-            })
-        else:
-            summaries.append({
-                "id": item["id"],
-                "name": inventory_item.get("name", "Unknown"),
-                "quantity": item["quantity"],
-                "price": float(inventory_item.get("price", 0.0))
-            })
-    return summaries, insufficient
-
-
-def _connect_to_db():
-    try:
-        return mysql.connector.connect(
-            host=os.environ.get('DB_HOST'),
-            user=os.environ.get('DB_USER'),
-            password=os.environ.get('DB_PASSWORD'),
-            database=os.environ.get('DB_NAME'),
-        )
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Something is wrong with your user name or password")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database does not exist")
-        else:
-            print(err)
-        raise
-
-
-def _execute_query(query: str, data: tuple | None = None):
-    cnx = _connect_to_db()
-    cursor = cnx.cursor()
-    cursor.execute(query, data)
-    id = cursor.lastrowid
-    cnx.commit()
-    cursor.close()
-    cnx.close()
-    return id
 
 
 def _save_order_to_database(items: list[dict], payment: dict, shipping: dict) -> str:
     payment_response = requests.post(f'{ROOT_URL.rstrip("/")}/payment', json=payment)
-    shipping_response = requests.post(f'{ROOT_URL.rstrip("/")}/shipping', json=shipping)
-    if not payment_response.ok or not shipping_response.ok:
-        raise RuntimeError("Error saving order to database")
+    if not payment_response.ok:
+        raise RuntimeError("Error saving payment data")
 
-    insert_order = ("INSERT INTO ORDERS "
-                    "(CUSTOMER_NAME, ORDER_CONFIRMATION_NUMBER, SHIPPING_INFO_CONFIRMATION_NUMBER, PAYMENT_INFO_CONFIRMATION_NUMBER)"
-                    " VALUES (%s, %s, %s, %s)")
-    confirmation_number = uuid4().hex[:10].upper()
-    order_data = (
-        shipping.get("name"),
-        confirmation_number,
-        shipping_response.json().get("confirmation_number"),
-        payment_response.json().get("confirmation_number"),
+    shipping_confirmation_number = uuid4().hex[:10].upper()
+    orders = {
+        "orders": {
+            "customer_name": shipping.get("name"),
+            "shipping_info": shipping_confirmation_number,
+            "payment_info": payment_response.json().get("confirmation_number"),
+        },
+        "items": items
+    }
+    order_response = requests.post(f'{ROOT_URL.rstrip("/")}/orders', json=orders)
+    if not order_response.ok:
+        raise RuntimeError("Error saving order data")
+
+    shipping["confirmation_number"] = shipping_confirmation_number
+    shipping["business_id"] = BUSINESS_ID
+    shipping["num_packets"] = len(items)
+    shipping["weight"] = sum([1.0 * items[i]['quantity'] for i in range(len(items))])
+
+    sns = boto3.client('sns')
+    sns.publish(
+        TopicArn=os.environ.get('SHIPPING_TOPIC_ARN'),
+        Message=json.dumps(shipping),
     )
-    order_id = _execute_query(insert_order, order_data)
 
-    for item in items:
-        insert_item = ("INSERT INTO ORDER_LINE_ITEM "
-                       "(ORDER_ID, ITEM_NAME, QUANTITY, PRICE)"
-                       " VALUES (%s, %s, %s, %s)")
-        item_data = (
-            order_id,
-            item.get("name"),
-            item.get("quantity"),
-            item.get("price"),
-        )
-        _execute_query(insert_item, item_data)
-    return confirmation_number
-
-
-
+    return order_response.json().get("confirmation_number")
 
 
 def lambda_handler(event: dict, context):
@@ -209,13 +149,6 @@ def lambda_handler(event: dict, context):
         return _response(400, {"error": str(exc)})
 
     try:
-        summaries, insufficient = _validate_item_quantities(items)
-    except ValueError as exc:
-        return _response(404, {"Error": repr(exc)})
-    except RuntimeError as exc:
-        return _response(502, {"Error": repr(exc)})
-
-    try:
         reservation_result = _reserve_items(items)
     except RuntimeError as exc:
         return _response(502, {"Reservation error": repr(exc)})
@@ -224,4 +157,4 @@ def lambda_handler(event: dict, context):
         return _response(409, reservation_result["body"])
 
     confirmation_number = _save_order_to_database(items, payment, shipping)
-    return _response(200,{"confirmation_number": confirmation_number, "items": summaries})
+    return _response(200,{"confirmation_number": confirmation_number, "items": items})

@@ -1,14 +1,11 @@
-from __future__ import annotations
-
-import json
 import os
+import json
 from uuid import uuid4
 
 import mysql.connector
 from mysql.connector import errorcode
 
 
-ROOT_URL = os.environ.get('ROOT_URL')
 HEADERS = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Headers": "Content-Type",
@@ -27,7 +24,7 @@ def _response(status: int, body: dict | list | None = None) -> dict:
     return response
 
 
-def _format_body(body: dict | str | None) -> dict | None:
+def _format_body(body: object) -> dict | None:
     if isinstance(body, str):
         try:
             body = json.loads(body)
@@ -57,33 +54,29 @@ def _connect_to_db():
         raise
 
 
-def _execute_query(query: str, data: tuple | None = None):
+def _save_order(order: dict, items: dict):
     cnx = _connect_to_db()
     cursor = cnx.cursor()
-    cursor.execute(query, data)
+    insert_order = ("INSERT INTO ORDERS "
+                    "(CUSTOMER_NAME, ORDER_CONFIRMATION_NUMBER, SHIPPING_INFO_CONFIRMATION_NUMBER, PAYMENT_INFO_CONFIRMATION_NUMBER)"
+                    " VALUES (%s, %s, %s, %s)")
+    confirmation_number = uuid4().hex[:10].upper()
+    order_data = (order.get("name"), confirmation_number, order.get("shipping_info"), order.get("payment_info"))
+    cursor.execute(insert_order, order_data)
+    order_id = cursor.lastrowid
     cnx.commit()
+
+    for item in items:
+        insert_item = ("INSERT INTO ORDER_LINE_ITEM (ORDER_ID, NAME, QUANTITY, PRICE) VALUES (%s, %s, %s, %s)")
+        item_data = (order_id, item.get("name"), item.get("quantity"), item.get("price"))
+        cursor.execute(insert_item, item_data)
+        cnx.commit()
     cursor.close()
     cnx.close()
-
-def _persist_payment_info(body: dict):
-    insert_query = (
-        "INSERT INTO PAYMENT_INFO "
-        "(payment_info_confirmation_number, holder_name, card_num, exp_date, cvv) "
-        "VALUES (%s, %s, %s, %s, %s)"
-    )
-    confirmation_number = uuid4().hex[:10].upper()
-    insert_data = (
-        confirmation_number,
-        body["card_holder_name"],
-        body["credit_card_number"],
-        body["expir_date"],
-        body["cvvCode"],
-    )
-    _execute_query(insert_query, insert_data)
     return confirmation_number
 
 
-def lambda_handler(event: dict, context):
+def lambda_handler(event, context):
     if event["requestContext"]["http"]["method"] != "POST":
         return _response(404, {"error": "Not found"})
 
@@ -92,9 +85,8 @@ def lambda_handler(event: dict, context):
         return _response(400, {"Invalid JSON format": f"{body}"})
 
     try:
-        confirmation_number = _persist_payment_info(body)
+        confirmation_number = _save_order(body.get("orders"), body.get("items"))
     except Exception as e:
-        print(e)
-        return _response(500, {"error": "Internal server error"})
+        return _response(500, {"error": f"{str(e)}"})
 
-    return _response(200, {"confirmation_number": confirmation_number})
+    return _response(200, {"confirmation_number": f"{confirmation_number}"})
