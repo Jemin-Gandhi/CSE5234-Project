@@ -61,19 +61,19 @@ def _execute_query(query: str, data: tuple | None = None):
     cnx = _connect_to_db()
     cursor = cnx.cursor()
     cursor.execute(query, data)
+    id = cursor.lastrowid
     cnx.commit()
     cursor.close()
     cnx.close()
+    return id
 
 def _persist_shipping_info(body: dict):
     insert_query = (
-        "INSERT INTO shipping_info "
-        "(shipping_info_confirmation_number, name, address1, address2, city, state, zip) "
-        "VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        "INSERT INTO ADDRESS "
+        "(NAME, ADDRESS1, ADDRESS2, CITY, STATE, POSTAL_CODE) "
+        "VALUES (%s, %s, %s, %s, %s, %s)"
     )
-    confirmation_number = uuid4().hex[:10].upper()
     insert_data = (
-        confirmation_number,
         body["name"],
         body["addressLine1"],
         body["addressLine2"],
@@ -81,22 +81,35 @@ def _persist_shipping_info(body: dict):
         body["state"],
         body["zip"],
     )
-    _execute_query(insert_query, insert_data)
-    return confirmation_number
+    address_id = _execute_query(insert_query, insert_data)
+
+    insert_shipping_query = (
+        "INSERT INTO SHIPPING_INFO "
+        "(SHIPPING_INFO_CONFIRMATION_NUMBER, BUSINESS_ID, ADDRESS_ID, NUM_PACKETS, WEIGHT) "
+        "VALUES (%s, %s, %s, %s, %s)"
+    )
+    insert_shipping_data = (
+        body['confirmation_number'],
+        body["business_id"],
+        address_id,
+        body["num_packets"],
+        body['weight']
+    )
+    _execute_query(insert_shipping_query, insert_shipping_data)
+
 
 
 def lambda_handler(event: dict, context):
-    if event["requestContext"]["http"]["method"] != "POST":
-        return _response(404, {"error": "Not found"})
+    for record in event['Records']:
+        message = record['Sns']['Message']
+        body = _format_body(message)
+        if not body:
+            return _response(400, {"Invalid JSON format": f"{body}"})
 
-    body = _format_body(event.get("body", None))
-    if not body:
-        return _response(400, {"Invalid JSON format": f"{body}"})
+        try:
+            _persist_shipping_info(body)
+        except Exception as e:
+            print(e)
+            return _response(500, {"error": "Internal server error"})
 
-    try:
-        confirmation_number = _persist_shipping_info(body)
-    except Exception as e:
-        print(e)
-        return _response(500, {"error": "Internal server error"})
-
-    return _response(200, {"confirmation_number": confirmation_number})
+        print(_response(200, {}))
