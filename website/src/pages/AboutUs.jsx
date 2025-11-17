@@ -27,14 +27,41 @@ export default function AboutUs() {
     },
   ];
 
+
+  function HoverCard({ children }) {
+    const [hover, setHover] = React.useState(false);
+  
+    return (
+      <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          padding: "1.5rem",
+          width: "100%",
+          transition: "all 0.25s ease",
+          transform: hover ? "translateY(-8px)" : "translateY(0)",
+          boxShadow: hover
+            ? "0 12px 28px rgba(0,0,0,0.18)"
+            : "0 2px 6px rgba(0,0,0,0.1)",
+          cursor: "pointer",
+          background: "white",
+        }}
+      >
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: "3rem 1rem", fontFamily: "Arial, sans-serif", color: "#333" }}>
       {/* Header */}
       <section style={{ textAlign: "center", marginBottom: "3rem" }}>
         <h1 style={{ color: "#d32f2f", marginBottom: "1rem" }}>About Us</h1>
         <p style={{ fontSize: "1.2rem", maxWidth: "800px", margin: "0 auto" }}>
-          At WanderNest, we make dream getaways accessible by connecting travelers to unused vacation packages at unbeatable prices.
-          Whether you’re buying or selling, we turn missed trips into unforgettable adventures.
+          At Tripply, we make dream getaways accessible by connecting travelers to unused vacation packages at unbeatable prices.
+          Whether you're buying or selling, we turn missed trips into unforgettable adventures.
         </p>
       </section>
 
@@ -76,7 +103,8 @@ export default function AboutUs() {
             justifyItems: "center"
           }}
         >
-          <div style={{ border: "1px solid #ddd", borderRadius: "10px", padding: "1.5rem", boxShadow: "0 2px 6px rgba(0,0,0,0.1)", width: "100%" }}>
+          
+          <HoverCard>
             <img src={jeminImg} alt="Jemin Gandhi" style={{ width: "100%", borderRadius: "10px", marginBottom: "1rem" }} />
             <h3 style={{ color: "#d32f2f" }}>Jemin Gandhi</h3>
             <h4>Chief Executive Officer (CEO) & Co-Founder</h4>
@@ -87,9 +115,9 @@ export default function AboutUs() {
             </p>
             <p><strong>Education:</strong> B.S. in Computer Science, The Ohio State University</p>
             <p><strong>Passion:</strong> Building impactful technology that bridges human experience and digital opportunity.</p>
-          </div>
-
-          <div style={{ border: "1px solid #ddd", borderRadius: "10px", padding: "1.5rem", boxShadow: "0 2px 6px rgba(0,0,0,0.1)", width: "100%" }}>
+            </HoverCard>
+          
+            <HoverCard>
             <img src={krishnaImg} alt="Krishna Saraiya" style={{ width: "100%", borderRadius: "10px", marginBottom: "1rem" }} />
             <h3 style={{ color: "#d32f2f" }}>Krishna Saraiya</h3>
             <h4>Chief Operating Officer (COO) & Co-Founder</h4>
@@ -99,9 +127,9 @@ export default function AboutUs() {
             </p>
             <p><strong>Education:</strong> B.S. in Computer Science, The Ohio State University</p>
             <p><strong>Passion:</strong> Designing systems where simplicity and trust drive every interaction.</p>
-          </div>
+            </HoverCard>
 
-          <div style={{ border: "1px solid #ddd", borderRadius: "10px", padding: "1.5rem", boxShadow: "0 2px 6px rgba(0,0,0,0.1)", width: "100%" }}>
+            <HoverCard>
             <img src={benImg} alt="Ben Horvath" style={{ width: "100%", borderRadius: "10px", marginBottom: "1rem" }} />
             <h3 style={{ color: "#d32f2f" }}>Ben Horvath</h3>
             <h4>Chief Technology Officer (CTO) & Co-Founder</h4>
@@ -111,9 +139,9 @@ export default function AboutUs() {
             </p>
             <p><strong>Education:</strong> M.S. in Computer Science & Math, The Ohio State University</p>
             <p><strong>Passion:</strong> Solving complex problems that make travel simpler and smarter.</p>
-          </div>
+            </HoverCard>
 
-          <div style={{ border: "1px solid #ddd", borderRadius: "10px", padding: "1.5rem", boxShadow: "0 2px 6px rgba(0,0,0,0.1)", width: "100%" }}>
+            <HoverCard>
             <img src={gaigeImg} alt="Gaige McMichael" style={{ width: "100%", borderRadius: "10px", marginBottom: "1rem" }} />
             <h3 style={{ color: "#d32f2f" }}>Gaige McMichael</h3>
             <h4>Chief Marketing Officer (CMO) & Co-Founder</h4>
@@ -124,7 +152,7 @@ export default function AboutUs() {
             </p>
             <p><strong>Education:</strong> B.S. in Computer Science, The Ohio State University</p>
             <p><strong>Passion:</strong> Turning stories of last-minute trips into lifelong memories.</p>
-          </div>
+          </HoverCard>
         </div>
       </section>
 

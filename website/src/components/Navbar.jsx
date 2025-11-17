@@ -35,7 +35,7 @@ export default function Navbar({ rightSlot = null }) {
       <div className="container-fluid">
         {/* Brand */}
         <Link className="navbar-brand fw-semibold" to="/">
-          Vacation Sales
+          Tripply
         </Link>
 
         {/* Right controls (Cart + Hamburger) */}
