@@ -27,7 +27,7 @@ export default function ContactUs() {
               Saturday - Sunday: 9:00 AM - 6:00 PM EST</p>
               
               <h5>Email Support</h5>
-              <p><strong>support@vacationdreams.com</strong></p>
+              <p><strong>support@Tripply.com</strong></p>
               <p>We typically respond within 24 hours</p>
               
               <h5>Live Chat</h5>

@@ -48,7 +48,7 @@ export default function Home() {
                             Turn Unused Vacations into Your Next Adventure
                         </h1>
                         <p className="lead mb-4 col-lg-10 col-xl-8">
-                            Discover exclusive, last-minute packages from fellow travelers. WanderNest makes it effortless to
+                            Discover exclusive, last-minute packages from fellow travelers. Tripply makes it effortless to
                             save big on bucket-list trips while helping sellers recoup their plans.
                         </p>
                         <div className="d-flex flex-wrap gap-3">
@@ -70,7 +70,7 @@ export default function Home() {
                             <div className="card-body p-4">
                                 <h2 className="h3 text-danger fw-bold mb-3">A Marketplace Built for Travelers</h2>
                                 <p className="mb-0">
-                                    WanderNest matches time-sensitive vacation packages with eager explorers. Browse curated listings,
+                                    Tripply matches time-sensitive vacation packages with eager explorers. Browse curated listings,
                                     review every itinerary detail, and check real-time availability before you book.
                                 </p>
                             </div>
@@ -149,7 +149,7 @@ export default function Home() {
                             <h2 className="h2 fw-bold text-danger mb-3">Trusted by Travelers Everywhere</h2>
                             <p className="lead text-muted">
                                 “We booked the Maui retreat just two weeks before departure and saved over $1,200. The process was
-                                seamless, and the WanderNest team guided us from purchase to check-in.”
+                                seamless, and the Tripply team guided us from purchase to check-in.”
                             </p>
                             <p className="fw-semibold mb-0">— Priya &amp; Alex, Seattle</p>
                         </div>
